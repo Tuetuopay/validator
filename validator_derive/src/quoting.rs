@@ -375,6 +375,26 @@ pub fn quote_custom_validation(
     unreachable!();
 }
 
+pub fn quote_customs_validation(
+    field_quoter: &FieldQuoter,
+    validation: &FieldValidation,
+) -> proc_macro2::TokenStream {
+    let field_name = &field_quoter.name;
+    let validator_param = field_quoter.quote_validator_param();
+
+    if let Validator::Customs(ref fun) = validation.validator {
+        let fn_ident: syn::Path = syn::parse_str(fun).unwrap();
+
+        let quoted = quote!(
+            result = ::validator::ValidationErrors::merge_all(result, #field_name, #fn_ident(#validator_param));
+        );
+
+        return field_quoter.wrap_if_option(quoted);
+    }
+
+    unreachable!();
+}
+
 pub fn quote_contains_validation(
     field_quoter: &FieldQuoter,
     validation: &FieldValidation,
@@ -450,6 +470,9 @@ pub fn quote_field_validation(
         }
         Validator::Custom(_) => {
             validations.push(quote_custom_validation(&field_quoter, validation))
+        }
+        Validator::Customs(_) => {
+            nested_validations.push(quote_customs_validation(&field_quoter, validation))
         }
         Validator::Contains(_) => {
             validations.push(quote_contains_validation(&field_quoter, validation))

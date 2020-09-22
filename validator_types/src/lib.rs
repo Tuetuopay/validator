@@ -8,6 +8,8 @@ pub enum Validator {
     Url,
     // String is the path to the function
     Custom(String),
+    // String is the path to the function
+    Customs(String),
     // String is the name of the field to match
     MustMatch(String),
     // value is a &str or a HashMap<String, ..>
@@ -42,6 +44,7 @@ impl Validator {
             Validator::Email => "email",
             Validator::Url => "url",
             Validator::Custom(_) => "custom",
+            Validator::Customs(_) => "customs",
             Validator::Contains(_) => "contains",
             Validator::Regex(_) => "regex",
             Validator::Range { .. } => "range",

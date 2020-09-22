@@ -272,6 +272,7 @@ pub fn extract_one_arg_validation(
 
     let validator = match validator_name.as_ref() {
         "custom" => Validator::Custom(value.unwrap()),
+        "customs" => Validator::Customs(value.unwrap()),
         "contains" => Validator::Contains(value.unwrap()),
         "must_match" => Validator::MustMatch(value.unwrap()),
         "regex" => Validator::Regex(value.unwrap()),
