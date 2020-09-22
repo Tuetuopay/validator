@@ -42,7 +42,9 @@ impl FieldQuoter {
     pub fn quote_validator_field(&self) -> proc_macro2::TokenStream {
         let ident = &self.ident;
 
-        if self._type.starts_with("Option<") || self._type.starts_with("Vec<") {
+        if self._type.starts_with("Option<") || self._type.starts_with("Vec<")
+           || self._type.starts_with("&Option<")
+           || self._type.starts_with("&Vec<") {
             quote!(#ident)
         } else if COW_TYPE.is_match(&self._type.as_ref()) {
             quote!(self.#ident.as_ref())
@@ -90,7 +92,7 @@ impl FieldQuoter {
     pub fn wrap_if_vector(&self, tokens: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
         let field_ident = &self.ident;
         let field_name = &self.name;
-        if self._type.starts_with("Vec<") {
+        if self._type.starts_with("Vec<") || self._type.starts_with("&Vec<") {
             return quote!(
             if !::validator::ValidationErrors::has_error(&result, #field_name) {
                 let results: Vec<_> = self.#field_ident.iter().map(|#field_ident| {
