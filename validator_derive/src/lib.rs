@@ -466,6 +466,12 @@ fn find_validators_for_field(
                                             None => error(lit.span(), "invalid argument for `custom` validator: only strings are allowed"),
                                         };
                                     }
+                                    "customs" => {
+                                        match lit_to_string(lit) {
+                                            Some(s) => validators.push(FieldValidation::new(Validator::Customs(s))),
+                                            None => error(lit.span(), "invalid argument for `custom` validator: only strings are allowed"),
+                                        };
+                                    }
                                     "contains" => {
                                         match lit_to_string(lit) {
                                             Some(s) => validators.push(FieldValidation::new(Validator::Contains(s))),
@@ -525,6 +531,14 @@ fn find_validators_for_field(
                                         validators.push(extract_custom_validation(
                                             rust_ident.clone(),
                                             attr,
+                                            &meta_items,
+                                        ));
+                                    }
+                                    "customs" => {
+                                        validators.push(extract_one_arg_validation(
+                                            "function",
+                                            ident.to_string(),
+                                            rust_ident.clone(),
                                             &meta_items,
                                         ));
                                     }
